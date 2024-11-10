@@ -1,6 +1,5 @@
 // TODO:
 // * Value list
-// * Deinit free nodes
 
 #include "btree.h"
 
@@ -307,6 +306,21 @@ static FindResult find_data_page(const BTree *tree, Bytes key) {
   return (FindResult){data, parent};
 }
 
+static void free_node(Node *n);
+
+static void free_interior_node(Node *n) {
+  for (u32 i = 0; i < n->interior.n; ++i)
+    free_node(n->interior.children[i]);
+  free(n);
+}
+
+static void free_node(Node *n) {
+  if (n->type == Data)
+    free(n);
+  else
+    free_interior_node(n);
+}
+
 // Public API
 // ============================================================================
 
@@ -316,10 +330,7 @@ BTreeStatus btree_init(BTree *tree) {
   return 0;
 }
 
-void btree_deinit(BTree *tree) {
-  if (tree->root)
-    free(tree->root);
-}
+void btree_deinit(BTree *tree) { free_node(tree->root); }
 
 BTreeStatus btree_find(const BTree *tree, BTreeKey key, BTreeVal *val) {
   FindResult res = find_data_page(tree, key);
