@@ -2,11 +2,15 @@
 
 #include "stdtypes.h"
 
-#define BTree_OK 0
-typedef int BTree_Status;
+typedef enum {
+  BTree_OK,
+  BTree_ERROR,
+  BTree_NOT_FOUND,
+  BTree_END,
+} BTreeStatus;
 
 typedef struct {
-  void* root;
+  void *root;
   u32 height;
 } BTree;
 
@@ -19,13 +23,16 @@ typedef struct {
 } BTreeRecord;
 
 typedef struct {
+  const BTree *tree;
+  void *node;
+  u32 offset;
 } BTreeIter;
 
-BTree_Status btree_init(BTree*);
-void btree_deinit(BTree*);
-
-BTree_Status btree_find(const BTree*, BTreeKey key, BTreeIter*);
-BTree_Status btree_next(const BTree*, BTreeIter*, BTreeRecord*);
-BTree_Status btree_insert(BTree*, BTreeRecord);
-BTree_Status btree_delete(BTree*, BTreeKey key);
-void btree_debug_print(BTree*);
+BTreeStatus btree_init(BTree *);
+void btree_deinit(BTree *);
+BTreeStatus btree_find(const BTree *, BTreeKey key, BTreeVal *val);
+BTreeStatus btree_insert(BTree *, BTreeRecord);
+BTreeStatus btree_delete(BTree *, BTreeKey key);
+BTreeStatus btree_iter(const BTree *, BTreeKey key, BTreeIter *iter);
+BTreeStatus btree_next(BTreeIter *, BTreeRecord *);
+void btree_debug_print(BTree *);

@@ -2,7 +2,7 @@ export CC := zig cc
 export AR := zig ar
 export PATH := $(CURDIR)/scripts:$(PATH)
 export ROOTDIR := $(CURDIR)
-export CFLAGS += -std=c11 -Wall -Werror -g -DDEBUG
+export CFLAGS += -std=c11 -Wall -Werror -g -O2
 
 # src/
 HDRS := $(wildcard src/*.h)
